@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>你是哪種旅行靈魂？— TTT Club</title>
+
+<!-- ============================================================
+  TTT CLUB QUIZ V3
+  BRAND CUSTOMISATION — edit the variables below
+  ============================================================ -->
+<style>
+  :root {
+    /* --- BRAND COLOURS --- */
+    --brand-bg:        #0a0a08;   /* page background */
+    --brand-surface:   #141410;   /* card / selected surface */
+    --brand-gold:      #c8a96a;   /* primary accent */
+    --brand-gold-lite: #e8c888;   /* hover accent */
+    --brand-text:      #e8e4d8;   /* primary text */
+    --brand-muted:     #b0a890;   /* body text */
+    --brand-dim:       #7a6a50;   /* sub text */
+    --brand-ghost:     #5a5040;   /* very dim */
+    --brand-border:    #2a2820;   /* border colour */
+    --brand-border-dim:#1e1e18;   /* faint border */
+    --brand-yes:       #6a9a5a;   /* match green */
+    --brand-maybe:     #b8943a;   /* conditional amber */
+    --brand-no:        #8a6a5a;   /* no match (softened) */
+
+    /* --- BRAND LOGO (optional) ---
+       Replace the src below with your logo URL, or set display:none to hide */
+    --logo-display: block;
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Space+Mono:wght@400;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--brand-bg); color: var(--brand-text); font-family: 'Cormorant Garamond', serif; min-height: 100vh; overflow-x: hidden; }
+  .container { max-width: 680px; margin: 0 auto; padding: 3rem 2rem 4rem; }
+
+  /* --- logo --- */
+  .brand-logo { display: var(--logo-display); margin-bottom: 2rem; }
+  .brand-logo img {
+    /* CUSTOMISE: replace src in the HTML below with your logo file or URL */
+    height: 36px; width: auto; opacity: 0.85;
+  }
+
+  .brand-mark { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.3em; color: var(--brand-ghost); text-transform: uppercase; margin-bottom: 2.5rem; }
+  .headline { font-size: clamp(2.8rem, 7vw, 4.2rem); font-weight: 300; line-height: 1.05; letter-spacing: -0.02em; color: var(--brand-text); margin-bottom: 0.5rem; }
+  .headline em { font-style: italic; color: var(--brand-gold); }
+  .subline { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.25em; color: var(--brand-ghost); margin-bottom: 3rem; margin-top: 0.8rem; }
+  .divider { width: 40px; height: 1px; background: var(--brand-gold); margin-bottom: 2.5rem; }
+  .intro-text { font-size: 1.15rem; line-height: 1.75; color: var(--brand-muted); margin-bottom: 2.5rem; font-weight: 300; }
+  .intro-text span { color: var(--brand-text); font-style: italic; }
+  .start-btn { display: inline-block; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--brand-bg); background: var(--brand-gold); padding: 14px 32px; border: none; cursor: pointer; transition: background 0.2s; }
+  .start-btn:hover { background: var(--brand-gold-lite); }
+
+  /* --- already done screen --- */
+  .done-screen { text-align: center; padding: 4rem 2rem; }
+  .done-title { font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 300; color: var(--brand-text); margin-bottom: 1rem; }
+  .done-title em { font-style: italic; color: var(--brand-gold); }
+  .done-sub { font-size: 1rem; color: var(--brand-dim); line-height: 1.7; margin-bottom: 2rem; }
+  .done-type { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.3em; color: var(--brand-gold); border: 0.5px solid var(--brand-gold); display: inline-block; padding: 5px 16px; margin-bottom: 2rem; }
+
+  /* --- quiz --- */
+  .quiz-section { display: none; }
+  .progress-bar-wrap { width: 100%; height: 1px; background: var(--brand-border-dim); margin-bottom: 3rem; }
+  .progress-bar-fill { height: 1px; background: var(--brand-gold); transition: width 0.4s ease; }
+  .q-counter { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.3em; color: var(--brand-ghost); margin-bottom: 1.5rem; }
+  .question-text { font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 300; line-height: 1.3; color: var(--brand-text); margin-bottom: 0.4rem; white-space: pre-line; }
+  .question-sub { font-size: 0.95rem; color: var(--brand-dim); margin-bottom: 2.5rem; font-style: italic; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option-btn { background: transparent; border: 0.5px solid var(--brand-border); color: var(--brand-muted); font-family: 'Cormorant Garamond', serif; font-size: 1.05rem; font-weight: 300; padding: 16px 20px; text-align: left; cursor: pointer; transition: all 0.18s; line-height: 1.4; }
+  .option-btn:hover { border-color: var(--brand-gold); color: var(--brand-text); background: #0f0f0a; }
+  .option-btn.selected { border-color: var(--brand-gold); background: var(--brand-surface); color: var(--brand-text); }
+  .opt-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.2em; color: var(--brand-ghost); display: block; margin-bottom: 4px; }
+  .option-btn.selected .opt-label { color: var(--brand-gold); }
+  .nav-row { display: flex; justify-content: space-between; align-items: center; margin-top: 2.5rem; }
+  .nav-btn { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; background: transparent; border: none; cursor: pointer; padding: 0; transition: color 0.15s; }
+  .nav-btn-back { color: #3a3028; }
+  .nav-btn-back:hover { color: var(--brand-dim); }
+  .nav-btn-next { color: var(--brand-gold); border-bottom: 0.5px solid var(--brand-gold); padding-bottom: 2px; }
+  .nav-btn-next:hover { color: var(--brand-gold-lite); border-color: var(--brand-gold-lite); }
+  .nav-btn-next:disabled { color: #3a3028; border-color: #3a3028; cursor: default; }
+
+  /* --- result --- */
+  .result-section { display: none; }
+  .result-badge { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.35em; color: var(--brand-gold); display: inline-block; border: 0.5px solid var(--brand-gold); padding: 5px 14px; margin-bottom: 1.5rem; }
+  .result-type { font-size: clamp(2rem, 6vw, 3.2rem); font-weight: 300; line-height: 1.1; color: var(--brand-text); margin-bottom: 0.3rem; }
+  .result-type em { font-style: italic; color: var(--brand-gold); }
+  .result-tagline { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.2em; color: var(--brand-ghost); margin-bottom: 2.5rem; }
+  .result-desc { font-size: 1.05rem; line-height: 1.8; color: #9a8a70; margin-bottom: 2rem; }
+  .result-desc strong { color: var(--brand-gold); font-weight: 400; }
+  .traits-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 2.5rem; }
+  .trait-pill { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.15em; padding: 5px 12px; background: var(--brand-surface); border: 0.5px solid var(--brand-border); color: var(--brand-dim); }
+
+  /* --- score bars --- */
+  .score-bar-row { display: flex; flex-direction: column; gap: 10px; margin-bottom: 2rem; }
+  .score-bar-item { display: flex; align-items: center; gap: 12px; }
+  .score-bar-label { font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 0.15em; color: var(--brand-ghost); width: 72px; flex-shrink: 0; }
+  .score-bar-track { flex: 1; height: 1px; background: var(--brand-border-dim); }
+  .score-bar-fill { height: 1px; background: var(--brand-gold); transition: width 1s ease; }
+  .score-bar-val { font-family: 'Space Mono', monospace; font-size: 8px; color: var(--brand-ghost); width: 28px; text-align: right; flex-shrink: 0; }
+
+  /* --- verdict --- */
+  .verdict-box { border: 0.5px solid var(--brand-border); padding: 1.5rem; margin-bottom: 2rem; }
+  .verdict-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.3em; color: var(--brand-ghost); margin-bottom: 0.8rem; }
+  .verdict-text { font-size: 1.1rem; color: var(--brand-muted); font-style: italic; line-height: 1.6; }
+  .verdict-match { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 0.1em; margin-top: 1rem; padding-top: 1rem; border-top: 0.5px solid var(--brand-border-dim); }
+  .verdict-match.yes   { color: var(--brand-yes); }
+  .verdict-match.maybe { color: var(--brand-maybe); }
+  .verdict-match.no    { color: var(--brand-no); }
+
+  /* --- pairings --- */
+  .pairing-box { border: 0.5px solid var(--brand-border-dim); padding: 1.5rem; margin-bottom: 2rem; }
+  .pairing-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.3em; color: var(--brand-ghost); margin-bottom: 1rem; }
+  .pairing-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .pairing-card { flex: 1; min-width: 140px; border: 0.5px solid var(--brand-border); padding: 14px 16px; }
+  .pairing-type { font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 0.2em; color: var(--brand-gold); margin-bottom: 5px; }
+  .pairing-name { font-size: 1.05rem; color: var(--brand-text); font-style: italic; margin-bottom: 5px; }
+  .pairing-why { font-size: 0.85rem; color: var(--brand-ghost); line-height: 1.5; }
+
+  /* --- share --- */
+  .share-section { border: 0.5px solid var(--brand-border-dim); padding: 1.5rem; margin-bottom: 2rem; }
+  .share-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.3em; color: var(--brand-ghost); margin-bottom: 1rem; }
+  .share-quote { font-size: 1.05rem; color: var(--brand-dim); font-style: italic; margin-bottom: 1.2rem; line-height: 1.6; }
+  .share-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+  .share-btn { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.15em; color: var(--brand-ghost); background: transparent; border: 0.5px solid var(--brand-border); padding: 9px 18px; cursor: pointer; transition: all 0.15s; flex: 1; min-width: 120px; }
+  .share-btn:hover { color: var(--brand-gold); border-color: var(--brand-gold); }
+  .share-btn.ig { border-color: #5a4040; color: #8a6060; }
+  .share-btn.ig:hover { border-color: #c8a96a; color: var(--brand-gold); }
+
+  /* --- brand CTA at bottom of result --- */
+  .brand-cta { border-top: 0.5px solid var(--brand-border-dim); padding-top: 2rem; margin-bottom: 2rem; text-align: center; }
+  .brand-cta-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.3em; color: var(--brand-ghost); margin-bottom: 1rem; }
+  .brand-cta-link {
+    /* CUSTOMISE: replace href with your actual URL */
+    display: inline-block; font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--brand-bg); background: var(--brand-gold); padding: 12px 28px; text-decoration: none; transition: background 0.2s;
+  }
+  .brand-cta-link:hover { background: var(--brand-gold-lite); }
+  .brand-cta-sub { font-size: 0.9rem; color: var(--brand-ghost); margin-top: 0.8rem; font-style: italic; }
+
+  .retry-btn { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.2em; color: #3a3028; background: transparent; border: none; cursor: pointer; display: block; margin: 0 auto; transition: color 0.15s; }
+  .retry-btn:hover { color: var(--brand-dim); }
+  .fade-in { animation: fadeUp 0.35s ease forwards; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .corner-mark { position: fixed; bottom: 2rem; right: 2rem; font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 0.2em; color: var(--brand-border); writing-mode: vertical-rl; }
+  .icon-row { display: flex; gap: 20px; margin-bottom: 2rem; flex-wrap: wrap; }
+  .icon-item { font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 0.2em; color: #3a3028; display: flex; align-items: center; gap: 6px; }
+  .icon-dot { width: 4px; height: 4px; background: var(--brand-ghost); border-radius: 50%; }
+  .icon-dot.gold { background: var(--brand-gold); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ============================================================
+    BRAND LOGO — replace src with your logo file or URL
+    To hide logo: remove the .brand-logo div entirely
+  ============================================================ -->
+  <div class="brand-logo">
+    <img src="YOUR_LOGO_URL_HERE" alt="TTT Club" onerror="this.parentElement.style.display='none'">
+  </div>
+
+  <!-- INTRO -->
+  <div id="introSection">
+    <div class="brand-mark">TTT CLUB &nbsp;&mdash;&nbsp; TIME TO TRAVEL</div>
+    <h1 class="headline">你是哪種<br><em>旅行靈魂</em>？</h1>
+    <p class="subline">WHAT KIND OF TRAVELLER ARE YOU &nbsp;&bull;&nbsp; A FIELD TEST</p>
+    <div class="divider"></div>
+    <div class="icon-row">
+      <div class="icon-item"><div class="icon-dot gold"></div>荒野營地</div>
+      <div class="icon-item"><div class="icon-dot gold"></div>奢華遠征</div>
+      <div class="icon-item"><div class="icon-dot"></div>非青旅</div>
+      <div class="icon-item"><div class="icon-dot"></div>非購物團</div>
+      <div class="icon-item"><div class="icon-dot"></div>無 WiFi 生存</div>
+    </div>
+    <p class="intro-text">
+      <span>TTT Club</span> 不是普通旅行社。<br>
+      我們去沒有訊號的地方，也去有管家的地方 ——<br>
+      有時同一趟旅程兼而有之。<br><br>
+      15 題。6 種人格。沒有標準答案，<br>
+      只有：你屬不屬於這裡。
+    </p>
+    <button class="start-btn" onclick="startQuiz()">開始測驗 &rarr;</button>
+  </div>
+
+  <!-- ALREADY DONE -->
+  <div id="doneSection" style="display:none">
+    <div class="done-screen">
+      <div class="brand-mark">TTT CLUB &nbsp;&mdash;&nbsp; FIELD TEST</div>
+      <h2 class="done-title">你已經測過了。<br><em>結果不會變。</em></h2>
+      <p class="done-sub">你的旅行靈魂已被記錄。<br>每個人只有一次機會找到自己的答案。</p>
+      <div id="doneTypeDisplay"></div>
+      <p class="done-sub" style="font-size:0.85rem; margin-top: 1rem;">想加入 TTT Club？<br>傳訊息給我們。</p>
+      <!-- CUSTOMISE: replace href with your contact/signup link -->
+      <a href="YOUR_CONTACT_URL_HERE" style="display:inline-block; margin-top:1.5rem; font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.2em; color:#0a0a08; background:#c8a96a; padding:12px 28px; text-decoration:none;">聯絡我們 &rarr;</a>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="quiz-section" id="quizSection">
+    <div class="brand-mark">TTT CLUB &nbsp;&mdash;&nbsp; FIELD TEST</div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="q-counter" id="qCounter">QUESTION 1 / 15</div>
+    <div class="question-text" id="questionText"></div>
+    <div class="question-sub" id="questionSub"></div>
+    <div class="options" id="optionsContainer"></div>
+    <div class="nav-row">
+      <button class="nav-btn nav-btn-back" onclick="prevQ()" id="backBtn">← 上一題</button>
+      <button class="nav-btn nav-btn-next" onclick="nextQ()" id="nextBtn" disabled>下一題 →</button>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="result-section" id="resultSection"></div>
+
+</div>
+<div class="corner-mark">IT'S TIME TO TRAVEL</div>
+
+<script>
+// ============================================================
+// COOKIE LOCK — set to false to disable (e.g. for testing)
+// ============================================================
+const COOKIE_LOCK = true;
+const COOKIE_NAME = 'ttt_quiz_done';
+const COOKIE_DAYS = 365;
+
+function setCookie(name, value, days) {
+  const d = new Date();
+  d.setTime(d.getTime() + days * 864e5);
+  document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + d.toUTCString() + ';path=/;SameSite=Lax';
+}
+
+function getCookie(name) {
+  const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+// ============================================================
+// QUESTIONS
+// ============================================================
+const questions = [
+  {
+    text: "出發前三天，你在做什麼？",
+    sub: "Packing behaviour says everything.",
+    options: [
+      { label: "A", text: "行程、氣候、緊急聯絡全部整理好，資料夾已建立", score: { adapt: 2, grit: 1, social: 0, wild: 1, time: 2, depth: 1 } },
+      { label: "B", text: "大概知道去哪、帶什麼，心情不錯", score: { adapt: 2, grit: 1, social: 1, wild: 1, time: 1, depth: 1 } },
+      { label: "C", text: "還在工作，行李前一晚再說", score: { adapt: 1, grit: 2, social: 0, wild: 2, time: -1, depth: 0 } },
+      { label: "D", text: "研究當地美食和網美景點，準備好拍照", score: { adapt: 0, grit: 0, social: 3, wild: -1, time: 0, depth: -1 } }
+    ]
+  },
+  {
+    text: "抵達，沒有熱水。\n帳篷就在眼前。",
+    sub: "The shower is a river. The toilet is the forest.",
+    options: [
+      { label: "A", text: "早就預期了，沒差。先把帳篷搭好", score: { adapt: 2, grit: 3, social: 0, wild: 3, time: 1, depth: 2 } },
+      { label: "B", text: "有點意外，但沒問題，適應就好", score: { adapt: 3, grit: 2, social: 0, wild: 1, time: 0, depth: 1 } },
+      { label: "C", text: "可以接受，但希望這不是常態", score: { adapt: 1, grit: 1, social: 0, wild: 0, time: 0, depth: 0 } },
+      { label: "D", text: "當初說的不是這樣吧？這超出我的預期", score: { adapt: -2, grit: -2, social: 0, wild: -3, time: 0, depth: -2 } }
+    ]
+  },
+  {
+    text: "嚮導改變了今天的路線。\n你沒被事先告知。",
+    sub: "Plans change. Always.",
+    options: [
+      { label: "A", text: "好，聽你的，你最了解這裡", score: { adapt: 3, grit: 1, social: 2, wild: 2, time: 1, depth: 1 } },
+      { label: "B", text: "稍微問一下原因，然後跟著走", score: { adapt: 2, grit: 1, social: 1, wild: 1, time: 1, depth: 1 } },
+      { label: "C", text: "有點不舒服，但壓下去繼續", score: { adapt: 1, grit: 2, social: 0, wild: 0, time: 0, depth: 0 } },
+      { label: "D", text: "覺得應該要先說清楚，下次要講好", score: { adapt: -1, grit: 0, social: -1, wild: -1, time: -1, depth: 0 } }
+    ]
+  },
+  {
+    text: "如果可以旅行一個月，\n你會怎麼選？",
+    sub: "Five countries or one. This is the question.",
+    options: [
+      { label: "A", text: "待在一個國家。真正地把它走透透，理解它", score: { adapt: 2, grit: 2, social: 1, wild: 2, time: 2, depth: 3 } },
+      { label: "B", text: "一個國家為主，偶爾跨境看看", score: { adapt: 2, grit: 1, social: 1, wild: 1, time: 1, depth: 2 } },
+      { label: "C", text: "兩到三個國家，有點廣度也有點深度", score: { adapt: 1, grit: 1, social: 1, wild: 0, time: 0, depth: 0 } },
+      { label: "D", text: "五個國家，每個地方都留下腳印", score: { adapt: 0, grit: 0, social: 2, wild: -1, time: -2, depth: -3 } }
+    ]
+  },
+  {
+    text: "早上集合時間是 7:00。\n你幾點到？",
+    sub: "Punctuality is a form of respect.",
+    options: [
+      { label: "A", text: "6:50，已經在那裡了", score: { adapt: 2, grit: 1, social: 2, wild: 1, time: 3, depth: 1 } },
+      { label: "B", text: "差不多 7:00，準時", score: { adapt: 1, grit: 1, social: 1, wild: 1, time: 2, depth: 1 } },
+      { label: "C", text: "7:05 左右，稍微晚一點但沒差吧", score: { adapt: 0, grit: 0, social: 0, wild: 0, time: -2, depth: 0 } },
+      { label: "D", text: "通常會稍晚，我不太擅長早起", score: { adapt: -1, grit: 0, social: 0, wild: 0, time: -3, depth: 0 } }
+    ]
+  },
+  {
+    text: "今天的行程比預期多花了兩個小時。\n明天要早起。",
+    sub: "Time pressure. How do you respond?",
+    options: [
+      { label: "A", text: "沒關係，值得的。明天鬧鐘提早就好", score: { adapt: 3, grit: 2, social: 1, wild: 2, time: 2, depth: 2 } },
+      { label: "B", text: "有點累，但接受，調整一下睡眠", score: { adapt: 2, grit: 2, social: 0, wild: 1, time: 1, depth: 1 } },
+      { label: "C", text: "開始擔心明天會不會太趕", score: { adapt: 1, grit: 0, social: 0, wild: 0, time: 0, depth: 0 } },
+      { label: "D", text: "希望明天的行程可以推遲，我需要睡眠", score: { adapt: -1, grit: -1, social: 0, wild: -1, time: -2, depth: -1 } }
+    ]
+  },
+  {
+    text: "同行的人說要早起看日出。\n你完全不想起床。",
+    sub: "Group dynamics matter.",
+    options: [
+      { label: "A", text: "設鬧鐘，一起去。這是旅行", score: { adapt: 2, grit: 2, social: 2, wild: 1, time: 2, depth: 1 } },
+      { label: "B", text: "看看自己狀況，有精神就去", score: { adapt: 2, grit: 1, social: 1, wild: 1, time: 1, depth: 1 } },
+      { label: "C", text: "告訴大家我留下，讓他們去", score: { adapt: 1, grit: 1, social: 1, wild: 0, time: 0, depth: 0 } },
+      { label: "D", text: "為什麼要安排這麼早，可以不要嗎", score: { adapt: -1, grit: 0, social: -2, wild: -1, time: -2, depth: -1 } }
+    ]
+  },
+  {
+    text: "你在一個小村子裡待了三天。\n沒有特別的景點，只有日常。",
+    sub: "Slow travel. No highlights.",
+    options: [
+      { label: "A", text: "這才是旅行的本質。我很享受", score: { adapt: 3, grit: 2, social: 2, wild: 2, time: 1, depth: 3 } },
+      { label: "B", text: "前兩天好，第三天開始有點無聊", score: { adapt: 2, grit: 1, social: 1, wild: 1, time: 0, depth: 1 } },
+      { label: "C", text: "可以，但我也希望有一兩個值得記錄的時刻", score: { adapt: 1, grit: 1, social: 1, wild: 0, time: 0, depth: 0 } },
+      { label: "D", text: "三天太長了，我想移動到下一個地方", score: { adapt: 0, grit: 0, social: 1, wild: -1, time: -1, depth: -3 } }
+    ]
+  },
+  {
+    text: "食物端上來了。\n你完全不認識它。",
+    sub: "Local cuisine. Unidentified.",
+    options: [
+      { label: "A", text: "直接吃，看起來不錯", score: { adapt: 3, grit: 2, social: 1, wild: 2, time: 0, depth: 1 } },
+      { label: "B", text: "問問是什麼，然後吃", score: { adapt: 2, grit: 1, social: 2, wild: 1, time: 0, depth: 1 } },
+      { label: "C", text: "嚐一口，不合就放下", score: { adapt: 1, grit: 1, social: 0, wild: 0, time: 0, depth: 0 } },
+      { label: "D", text: "能不能有其他選項？", score: { adapt: -2, grit: -1, social: -1, wild: -2, time: 0, depth: -1 } }
+    ]
+  },
+  {
+    text: "這趟旅程，你最期待的是什麼？",
+    sub: "No wrong answer. Except one.",
+    options: [
+      { label: "A", text: "去那些「一般人去不到」的地方", score: { adapt: 2, grit: 2, social: 0, wild: 3, time: 1, depth: 2 } },
+      { label: "B", text: "感受跟日常完全不同的節奏和時間感", score: { adapt: 2, grit: 1, social: 1, wild: 2, time: 1, depth: 2 } },
+      { label: "C", text: "和同行的人產生真實的連結", score: { adapt: 1, grit: 0, social: 3, wild: 1, time: 0, depth: 1 } },
+      { label: "D", text: "打卡、拍照、記錄下來分享", score: { adapt: 0, grit: 0, social: 2, wild: -1, time: -1, depth: -2 } }
+    ]
+  },
+  {
+    text: "旅程中，有人一直在抱怨。",
+    sub: "How do you handle group energy?",
+    options: [
+      { label: "A", text: "試著轉移氣氛，但也尊重他的感受", score: { adapt: 2, grit: 1, social: 3, wild: 1, time: 0, depth: 1 } },
+      { label: "B", text: "基本上忽略，專注在自己的體驗", score: { adapt: 2, grit: 2, social: 0, wild: 2, time: 1, depth: 1 } },
+      { label: "C", text: "私下告訴他這樣影響到大家", score: { adapt: 1, grit: 2, social: 1, wild: 0, time: 0, depth: 0 } },
+      { label: "D", text: "跟著附和，確實有些地方不太好", score: { adapt: -1, grit: -1, social: 1, wild: -2, time: 0, depth: -1 } }
+    ]
+  },
+  {
+    text: "嚮導說這段路有風險，\n但景色是整趟最好的。",
+    sub: "Calculated risk. Your call.",
+    options: [
+      { label: "A", text: "問清楚風險類型，評估後決定去", score: { adapt: 3, grit: 2, social: 1, wild: 3, time: 1, depth: 2 } },
+      { label: "B", text: "信任嚮導的判斷，他說可以就去", score: { adapt: 3, grit: 1, social: 1, wild: 2, time: 1, depth: 1 } },
+      { label: "C", text: "看其他人怎麼決定，跟著走", score: { adapt: 1, grit: 0, social: 2, wild: 0, time: 0, depth: 0 } },
+      { label: "D", text: "還是不去，安全比較重要", score: { adapt: 0, grit: -1, social: 0, wild: -1, time: 0, depth: -1 } }
+    ]
+  },
+  {
+    text: "沒有網路。第二天了。",
+    sub: "Offline. Unknown duration.",
+    options: [
+      { label: "A", text: "完全沒差，其實很享受這種斷線感", score: { adapt: 3, grit: 2, social: 0, wild: 3, time: 1, depth: 2 } },
+      { label: "B", text: "第一天難受，但後來習慣了", score: { adapt: 3, grit: 2, social: 0, wild: 1, time: 0, depth: 1 } },
+      { label: "C", text: "有點焦慮，但努力讓自己放下", score: { adapt: 2, grit: 1, social: 0, wild: 0, time: 0, depth: 0 } },
+      { label: "D", text: "一直在找訊號，工作和生活都在線上", score: { adapt: -1, grit: 0, social: 0, wild: -3, time: -1, depth: -2 } }
+    ]
+  },
+  {
+    text: "同行者說「我可能會晚個 10 分鐘」。\n這是第三次了。",
+    sub: "Pattern recognition.",
+    options: [
+      { label: "A", text: "直接說：我們需要準時，這影響到大家", score: { adapt: 2, grit: 2, social: 1, wild: 1, time: 3, depth: 1 } },
+      { label: "B", text: "有些不爽，但這次還是等他", score: { adapt: 1, grit: 1, social: 1, wild: 0, time: 0, depth: 0 } },
+      { label: "C", text: "告訴他下次我們會先走", score: { adapt: 2, grit: 2, social: 0, wild: 1, time: 2, depth: 1 } },
+      { label: "D", text: "沒辦法，每個人節奏不同嘛", score: { adapt: 0, grit: 0, social: 1, wild: 0, time: -2, depth: 0 } }
+    ]
+  },
+  {
+    text: "旅程結束。回到城市。\n你的第一個念頭是什麼？",
+    sub: "The return reveals the traveller.",
+    options: [
+      { label: "A", text: "下次去哪？什麼時候可以再出發", score: { adapt: 3, grit: 2, social: 1, wild: 3, time: 1, depth: 2 } },
+      { label: "B", text: "需要時間消化這趟帶回來的東西", score: { adapt: 2, grit: 2, social: 1, wild: 2, time: 0, depth: 3 } },
+      { label: "C", text: "很高興回來了，但也值得", score: { adapt: 2, grit: 1, social: 1, wild: 0, time: 0, depth: 1 } },
+      { label: "D", text: "終於可以好好休息了，有點累", score: { adapt: 0, grit: 0, social: 0, wild: -1, time: 0, depth: -1 } }
+    ]
+  }
+];
+
+// ============================================================
+// RESULTS — 6 types, 2 pairings each (perfect + good)
+// ============================================================
+const results = [
+  {
+    id: "wild_soul",
+    title: "荒野靈魂",
+    subtitle: "THE WILD SOUL",
+    tagline: "你屬於那些沒有名字的地方",
+    desc: "沒有網路不是問題，是條件。你在被安排好的行程裡找到了自由，在不確定性裡找到了節奏。帳篷、泥土、凌晨四點的星空 —— 你來這裡不是為了打卡，是為了<strong>真正存在過</strong>。你也準時，因為你知道時間是集體的資源。",
+    traits: ["HIGH GRIT", "OFFLINE NATIVE", "PUNCTUAL", "DEEP EXPLORER"],
+    verdict: "TTT Club 需要你這樣的人。你能走到別人走不到的地方，而且不會叫苦。",
+    match: "yes",
+    matchText: "YOU'RE IN &mdash; WELCOME TO THE CLUB",
+    shareQuote: "我是荒野靈魂。沒有 WiFi 不是問題，是條件。#TTTClub #時候到了該旅行了",
+    pairings: [
+      { type: "PERFECT MATCH", name: "靜默稜線", why: "你們都不需要解釋，沉默就是溝通" },
+      { type: "GOOD MATCH", name: "深根旅人", why: "她的耐心讓你走得更深" }
+    ]
+  },
+  {
+    id: "quiet_edge",
+    title: "靜默稜線",
+    subtitle: "THE QUIET EDGE",
+    tagline: "你在邊界處最自在",
+    desc: "你不是最高調的那個，但你往往是最後留下來的。你能接受不舒適，但你選擇有品質的不舒適。奢華帳篷或五星飯店，對你來說都是手段，不是目的 —— 目的是<strong>去到那個地方本身</strong>。時間對你來說是尊重的語言。",
+    traits: ["FLEXIBLE", "SELF-CONTAINED", "RELIABLE", "QUALITY SEEKER"],
+    verdict: "你是 TTT Club 的理想旅伴。能跟得上，也能放得下。",
+    match: "yes",
+    matchText: "STRONG FIT &mdash; WE'D LOVE TO TRAVEL WITH YOU",
+    shareQuote: "我是靜默稜線。目的地本身才是目的。#TTTClub #小眾旅遊",
+    pairings: [
+      { type: "PERFECT MATCH", name: "荒野靈魂", why: "你們共享同一種沉默的語言" },
+      { type: "GOOD MATCH", name: "深根旅人", why: "她讓你慢下來，你帶她走得更遠" }
+    ]
+  },
+  {
+    id: "deep_root",
+    title: "深根旅人",
+    subtitle: "THE DEEP ROOT",
+    tagline: "一個地方，走到它向你打開為止",
+    desc: "你不趕，你不跳。一個月一個國家對你來說是理所當然。你想知道當地人吃什麼早餐、孩子在哪裡上學、市場在星期幾開。你是那種<strong>旅行完回來還在想那個地方</strong>的人。守時是你的基本教養。",
+    traits: ["SLOW TRAVEL DNA", "CULTURALLY CURIOUS", "PUNCTUAL", "LOW NOISE"],
+    verdict: "TTT Club 就是為你設計的。你理解旅行的意義。",
+    match: "yes",
+    matchText: "YOU BELONG HERE &mdash; WELCOME",
+    shareQuote: "我是深根旅人。一個地方，走到它向我打開為止。#TTTClub #慢旅行",
+    pairings: [
+      { type: "PERFECT MATCH", name: "靜默稜線", why: "你們都懂得停下來的價值" },
+      { type: "GOOD MATCH", name: "荒野靈魂", why: "他帶你到邊境，你讓他靜下來" }
+    ]
+  },
+  {
+    id: "calculated_drifter",
+    title: "理性漂流者",
+    subtitle: "THE CALCULATED DRIFTER",
+    tagline: "你有方向，只是不告訴別人",
+    desc: "你看起來隨性，其實心裡有一把尺。你接受改變，但你有底線。你不是最早準備好的，也不是最晚 —— 你剛好準時。你對速度有自己的想法：<strong>不衝，但也不拖</strong>。你是團隊裡的穩定器。不是每趟旅程都適合你，但你很清楚哪一種是。",
+    traits: ["SELF-DIRECTED", "ADAPTABLE", "MODERATE PACE", "STEADY"],
+    verdict: "有條件歡迎。選對行程，你會是很好的旅伴。",
+    match: "maybe",
+    matchText: "CONDITIONAL FIT &mdash; CHOOSE YOUR ROUTE CAREFULLY",
+    shareQuote: "我是理性漂流者。不衝，但也不拖。#TTTClub 你是哪種？",
+    pairings: [
+      { type: "PERFECT MATCH", name: "靜默稜線", why: "她的穩定讓你不至於漂太遠" },
+      { type: "GOOD MATCH", name: "深根旅人", why: "他的深度讓你找到值得停下的理由" }
+    ]
+  },
+  {
+    id: "reluctant_explorer",
+    title: "猶豫的探險者",
+    subtitle: "THE RELUCTANT EXPLORER",
+    tagline: "你想去，但你需要準備好",
+    desc: "你有好奇心，也有冒險的意願，但你需要一點緩衝。你對時間比較鬆散，對「沒有計劃」比較焦慮。TTT Club 的行程有時沒有緩衝 —— 你可能某幾天很享受，某幾天很掙扎。這取決於你<strong>願不願意讓自己不舒服</strong>。我們不排除你，但我們需要你誠實面對自己。",
+    traits: ["POTENTIAL", "NEEDS WARMUP", "TIME-LOOSE", "CAUTIOUS"],
+    verdict: "也許可以。從入門行程開始，先試試看。",
+    match: "maybe",
+    matchText: "CONDITIONAL &mdash; START WITH AN EASIER ROUTE",
+    shareQuote: "我是猶豫的探險者。我想去，只是需要準備好。#TTTClub",
+    pairings: [
+      { type: "PERFECT MATCH", name: "深根旅人", why: "他的節奏讓你有機會慢慢打開" },
+      { type: "GOOD MATCH", name: "靜默稜線", why: "她不會催你，但會帶你走更遠" }
+    ]
+  },
+  {
+    id: "comfort_seeker",
+    title: "舒適的旅人",
+    subtitle: "THE COMFORT SEEKER",
+    tagline: "你值得一趟好旅行，只是不是這種",
+    desc: "你對旅行有自己的想像，而這個想像裡有熱水、有訊號、有可以分享的地點。城市跳躍、行程滿滿、每天換一個景點 —— 這是你的節奏，而且你享受它。TTT Club 的旅程節奏不同，不是每個人都需要走同一條路。<strong>找到你真正喜歡的方式旅行，才是最重要的。</strong>",
+    traits: ["COMFORT DRIVEN", "CITY HOPPER", "SOCIAL SHARER", "OWN RHYTHM"],
+    verdict: "這趟旅程可能不是最適合你的，但旅行本來就有很多種。繼續探索屬於你的方式。",
+    match: "no",
+    matchText: "NOT THIS TIME &mdash; THE WORLD IS STILL YOURS",
+    shareQuote: "我是舒適的旅人。旅行有很多種方式，我正在找屬於我的。#TTTClub 你是哪種？",
+    pairings: [
+      { type: "PERFECT MATCH", name: "猶豫的探險者", why: "你們都需要一點確定感才能放鬆出發" },
+      { type: "GOOD MATCH", name: "理性漂流者", why: "他能給你結構，你讓他多一點享受" }
+    ]
+  }
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let current = 0;
+let answers = new Array(questions.length).fill(null);
+
+// ============================================================
+// INIT — check cookie on load
+// ============================================================
+window.addEventListener('DOMContentLoaded', () => {
+  if (COOKIE_LOCK) {
+    const saved = getCookie(COOKIE_NAME);
+    if (saved) {
+      showDoneScreen(saved);
+      return;
+    }
+  }
+  document.getElementById('introSection').style.display = 'block';
+});
+
+function showDoneScreen(savedId) {
+  document.getElementById('introSection').style.display = 'none';
+  document.getElementById('quizSection').style.display = 'none';
+  document.getElementById('resultSection').style.display = 'none';
+  const done = document.getElementById('doneSection');
+  done.style.display = 'block';
+  const res = results.find(r => r.id === savedId);
+  if (res) {
+    document.getElementById('doneTypeDisplay').innerHTML =
+      `<div class="done-type">${res.subtitle}</div>
+       <p style="font-family:'Cormorant Garamond',serif; font-size:1.6rem; font-weight:300; font-style:italic; color:#c8a96a; margin-top:0.5rem;">${res.title}</p>`;
+  }
+}
+
+function startQuiz() {
+  document.getElementById('introSection').style.display = 'none';
+  const qs = document.getElementById('quizSection');
+  qs.style.display = 'block';
+  qs.classList.add('fade-in');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[current];
+  document.getElementById('qCounter').textContent = `QUESTION ${current+1} / ${questions.length}`;
+  document.getElementById('progressFill').style.width = `${(current / questions.length) * 100}%`;
+  document.getElementById('questionText').textContent = q.text;
+  document.getElementById('questionSub').textContent = q.sub;
+  const container = document.getElementById('optionsContainer');
+  container.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn' + (answers[current] === i ? ' selected' : '');
+    btn.innerHTML = `<span class="opt-label">${opt.label}</span>${opt.text}`;
+    btn.onclick = () => selectOption(i);
+    container.appendChild(btn);
+  });
+  document.getElementById('backBtn').style.visibility = current === 0 ? 'hidden' : 'visible';
+  document.getElementById('nextBtn').disabled = answers[current] === null;
+  document.getElementById('nextBtn').textContent = current === questions.length - 1 ? '看結果 →' : '下一題 →';
+}
+
+function selectOption(i) {
+  answers[current] = i;
+  document.querySelectorAll('.option-btn').forEach((b, j) => b.classList.toggle('selected', j === i));
+  document.getElementById('nextBtn').disabled = false;
+}
+
+function nextQ() {
+  if (answers[current] === null) return;
+  if (current === questions.length - 1) { showResult(); return; }
+  current++;
+  const qs = document.getElementById('quizSection');
+  qs.style.animation = 'none'; void qs.offsetWidth;
+  qs.classList.add('fade-in');
+  renderQuestion();
+}
+
+function prevQ() {
+  if (current === 0) return;
+  current--;
+  renderQuestion();
+}
+
+function calcScores() {
+  let s = { adapt: 0, grit: 0, social: 0, wild: 0, time: 0, depth: 0 };
+  answers.forEach((a, qi) => {
+    if (a === null) return;
+    const sc = questions[qi].options[a].score;
+    Object.keys(s).forEach(k => s[k] += sc[k]);
+  });
+  return s;
+}
+
+function getResult(s) {
+  if (s.adapt < 4 || s.grit < 2) return results[5];
+  if (s.wild >= 14 && s.grit >= 12 && s.time >= 8) return results[0];
+  if (s.depth >= 14 && s.time >= 8) return results[2];
+  if (s.wild >= 10 && s.time >= 5) return results[1];
+  if (s.adapt >= 10 && s.time >= 3) return results[3];
+  if (s.adapt >= 6) return results[4];
+  return results[5];
+}
+
+function showResult() {
+  document.getElementById('quizSection').style.display = 'none';
+  const s = calcScores();
+  const res = getResult(s);
+
+  if (COOKIE_LOCK) setCookie(COOKIE_NAME, res.id, COOKIE_DAYS);
+
+  const rs = document.getElementById('resultSection');
+  rs.style.display = 'block';
+  rs.classList.add('fade-in');
+
+  const maxVals = { adapt: 35, grit: 28, wild: 35, time: 18, depth: 32 };
+  const pct = (v, dim) => Math.min(100, Math.max(0, Math.round((v / maxVals[dim]) * 100)));
+  const bars = [
+    { label: "ADAPTABILITY", val: pct(s.adapt, 'adapt') },
+    { label: "GRIT",         val: pct(s.grit,  'grit')  },
+    { label: "WILD FACTOR",  val: pct(s.wild,  'wild')  },
+    { label: "PUNCTUALITY",  val: pct(s.time,  'time')  },
+    { label: "DEPTH",        val: pct(s.depth, 'depth') }
+  ];
+
+  const pairingHTML = res.pairings.map(p => `
+    <div class="pairing-card">
+      <div class="pairing-type">${p.type}</div>
+      <div class="pairing-name">${p.name}</div>
+      <div class="pairing-why">${p.why}</div>
+    </div>`).join('');
+
+  const safeQuote = res.shareQuote.replace(/'/g, "\\'");
+  const igText = encodeURIComponent(res.shareQuote);
+
+  rs.innerHTML = `
+    <div class="brand-mark">TTT CLUB &mdash; YOUR RESULT</div>
+    <div class="result-badge">${res.subtitle}</div>
+    <h2 class="result-type"><em>${res.title}</em></h2>
+    <p class="result-tagline">${res.tagline.toUpperCase()}</p>
+    <div class="divider"></div>
+    <p class="result-desc">${res.desc}</p>
+
+    <div class="score-bar-row">
+      ${bars.map(b => `
+      <div class="score-bar-item">
+        <div class="score-bar-label">${b.label}</div>
+        <div class="score-bar-track"><div class="score-bar-fill" style="width:0%" data-w="${b.val}%"></div></div>
+        <div class="score-bar-val">${b.val}%</div>
+      </div>`).join('')}
+    </div>
+
+    <div class="traits-row">${res.traits.map(t => `<div class="trait-pill">${t}</div>`).join('')}</div>
+
+    <div class="verdict-box">
+      <div class="verdict-label">TTT CLUB VERDICT</div>
+      <div class="verdict-text">${res.verdict}</div>
+      <div class="verdict-match ${res.match}">${res.matchText}</div>
+    </div>
+
+    <div class="pairing-box">
+      <div class="pairing-label">TRAVELLER COMPATIBILITY</div>
+      <div class="pairing-row">${pairingHTML}</div>
+    </div>
+
+    <div class="share-section">
+      <div class="share-label">SHARE YOUR TYPE</div>
+      <div class="share-quote">"${res.shareQuote}"</div>
+      <div class="share-btns">
+        <button class="share-btn" id="copyBtn" onclick="copyShare('${safeQuote}')">複製文字</button>
+        <button class="share-btn ig" onclick="shareToIG('${safeQuote}')">分享到 IG Story</button>
+      </div>
+    </div>
+
+    <div class="brand-cta">
+      <div class="brand-cta-label">INTERESTED IN JOINING TTT CLUB?</div>
+      <!-- CUSTOMISE: replace href with your signup / contact link -->
+      <a class="brand-cta-link" href="YOUR_SIGNUP_URL_HERE" target="_blank">了解更多 &rarr;</a>
+      <p class="brand-cta-sub">it's time to travel &mdash; more time, more travel, more truth</p>
+    </div>
+  `;
+
+  setTimeout(() => {
+    document.querySelectorAll('.score-bar-fill').forEach(el => {
+      el.style.width = el.getAttribute('data-w');
+    });
+  }, 400);
+}
+
+function copyShare(text) {
+  const btn = document.getElementById('copyBtn');
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '已複製 ✓';
+    setTimeout(() => btn.textContent = '複製文字', 2000);
+  }).catch(() => {
+    btn.textContent = '請手動複製';
+  });
+}
+
+function shareToIG(text) {
+  // Instagram does not support pre-filled text via URL scheme on desktop.
+  // On mobile, this opens Instagram Stories camera. Users paste manually.
+  // Best practice: copy text first, then open IG.
+  navigator.clipboard.writeText(text).catch(() => {});
+  const ua = navigator.userAgent.toLowerCase();
+  const isMobile = /iphone|ipad|android/.test(ua);
+  if (isMobile) {
+    window.location.href = 'instagram://story-camera';
+  } else {
+    window.open('https://www.instagram.com/', '_blank');
+    setTimeout(() => {
+      const btn = document.querySelector('.share-btn.ig');
+      if (btn) { btn.textContent = '文字已複製，請貼到 IG'; setTimeout(() => { btn.textContent = '分享到 IG Story'; }, 3000); }
+    }, 200);
+  }
+}
+</script>
+</body>
+</html>
