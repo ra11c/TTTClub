@@ -695,28 +695,33 @@ function copyShare(text) {
 }
 
 function shareToIG(typeId, text) {
-  // 這裡會自動組合成如 'story_comfort_seeker.svg'
-  const fileName = `story_${typeId}.svg`; 
+  // 1. 自動組合出像 story_comfort_seeker.svg 的檔名
+  const fileName = `story_${typeId}.svg`;
   
-  // 取得圖片的絕對路徑 (GitHub Pages 需要完整 URL 較穩定)
-  const imageUrl = window.location.origin + window.location.pathname.replace('index.html', '') + fileName;
-
+  // 2. 複製分享文案到剪貼簿
   navigator.clipboard.writeText(text).then(() => {
     alert("文案已複製！圖檔下載後，請開啟 IG Story 貼上圖片與文案。");
-    
+
+    // 3. 建立一個隱藏連結來觸發下載
     const link = document.createElement('a');
-    link.href = imageUrl; 
+    // 使用相對路徑，因為圖片跟 index.html 在同一層
+    link.href = fileName; 
     link.download = fileName;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
-    // 跳轉 IG
+    // 4. 下載後嘗試打開 Instagram
     setTimeout(() => {
-      window.location.href = 'instagram://story-camera';
-    }, 1200);
+      const ua = navigator.userAgent.toLowerCase();
+      if (/iphone|ipad|android/.test(ua)) {
+        window.location.href = 'instagram://story-camera';
+      } else {
+        window.open('https://www.instagram.com/', '_blank');
+      }
+    }, 1000);
   }).catch(err => {
-    console.error('Failed to copy text: ', err);
+    alert("複製失敗，請手動截圖分享");
   });
 }
 </script>
