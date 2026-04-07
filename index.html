@@ -665,7 +665,7 @@ function showResult() {
       <div class="share-quote">"${res.shareQuote}"</div>
       <div class="share-btns">
         <button class="share-btn" id="copyBtn" onclick="copyShare('${safeQuote}')">複製文字</button>
-        <button class="share-btn ig" onclick="shareToIG('${safeQuote}')">分享到 IG Story</button>
+        <button class="share-btn ig" onclick="shareToIG('${res.id}', '${safeQuote}')">分享到 IG Story</button>
       </div>
     </div>
 
