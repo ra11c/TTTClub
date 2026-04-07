@@ -694,22 +694,32 @@ function copyShare(text) {
   });
 }
 
-function shareToIG(text) {
-  // Instagram does not support pre-filled text via URL scheme on desktop.
-  // On mobile, this opens Instagram Stories camera. Users paste manually.
-  // Best practice: copy text first, then open IG.
-  navigator.clipboard.writeText(text).catch(() => {});
-  const ua = navigator.userAgent.toLowerCase();
-  const isMobile = /iphone|ipad|android/.test(ua);
-  if (isMobile) {
-    window.location.href = 'instagram://story-camera';
-  } else {
-    window.open('https://www.instagram.com/', '_blank');
+function shareToIG(typeId, text) {
+  // 1. 定義對應的檔名
+  const fileName = `story_${typeId}.svg`;
+  
+  // 2. 複製文字到剪貼簿 (讓使用者可以貼在 Story 上)
+  navigator.clipboard.writeText(text).then(() => {
+    alert("文案已複製！接下來將下載分享圖，請手動上傳至 IG Story 並貼上文案。");
+    
+    // 3. 執行下載
+    const link = document.createElement('a');
+    link.href = fileName; // 確保這些 svg 檔案放在與 html 同一個資料夾
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // 4. 跳轉至 Instagram
     setTimeout(() => {
-      const btn = document.querySelector('.share-btn.ig');
-      if (btn) { btn.textContent = '文字已複製，請貼到 IG'; setTimeout(() => { btn.textContent = '分享到 IG Story'; }, 3000); }
-    }, 200);
-  }
+      const ua = navigator.userAgent.toLowerCase();
+      if (/iphone|ipad|android/.test(ua)) {
+        window.location.href = 'instagram://story-camera';
+      } else {
+        window.open('https://www.instagram.com/', '_blank');
+      }
+    }, 1000);
+  });
 }
 </script>
 </body>
